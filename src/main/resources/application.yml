@@ -1,0 +1,35 @@
+spring:
+  application:
+    name: holidaykeeper
+
+  # H2 Database Configuration
+  datasource:
+    url: jdbc:h2:mem:holidaydb
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+
+  # H2 Console
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+
+  # JPA Configuration
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+# Logging
+logging:
+  level:
+    com:
+      holidaykeeper: DEBUG
+    org:
+      hibernate:
+        SQL: DEBUG
