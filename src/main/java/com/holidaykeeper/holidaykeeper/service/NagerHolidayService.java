@@ -61,7 +61,8 @@ public class NagerHolidayService implements HolidayService {
         Map<LocalDate, Holiday> existingHolidayMap = existingHolidays.stream()
                 .collect(Collectors.toMap(Holiday::getDate, h -> h));
 
-
+        List<HolidayCountyMap> counties = new ArrayList<>();
+        List<HolidayTypeMap> types = new ArrayList<>();
 
         // 5. Upsert 로직
         for (HolidayDto dto : holidayDtoList) {
@@ -70,13 +71,17 @@ public class NagerHolidayService implements HolidayService {
 
             if (existingHoliday != null) {
                 // Update: 기존 Holiday 업데이트
-
+                counties.addAll(existingHoliday.getCounties());
+                types.addAll(existingHoliday.getTypes());
                 existingHoliday.update(newHoliday);
             } else {
                 // Insert: 새로운 Holiday 생성
                 holidayRepository.save(newHoliday);
             }
         }
+
+        holidayCountyMapRepository.deleteAllInBatch(counties);
+        holidayTypeMapRepository.deleteAllInBatch(types);
     }
 
     @Transactional

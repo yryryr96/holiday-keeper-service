@@ -82,10 +82,6 @@ public class Holiday {
         this.global = newHoliday.isGlobal();
         this.launchYear = newHoliday.getLaunchYear();
 
-        // 기존 연관관계 제거 (orphanRemoval로 자동 삭제)
-        this.types.clear();
-        this.counties.clear();
-
         // 새로운 연관관계 설정 (양방향)
         newHoliday.getTypes().forEach(typeMap -> {
             typeMap.setHoliday(this);
