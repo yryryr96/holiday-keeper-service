@@ -3,6 +3,7 @@ package com.holidaykeeper.holidaykeeper.service;
 import com.holidaykeeper.holidaykeeper.client.NagerApiClient;
 import com.holidaykeeper.holidaykeeper.domain.*;
 import com.holidaykeeper.holidaykeeper.dto.HolidayDto;
+import com.holidaykeeper.holidaykeeper.dto.request.HolidayDeleteRequest;
 import com.holidaykeeper.holidaykeeper.dto.request.HolidayGetRequest;
 import com.holidaykeeper.holidaykeeper.dto.request.HolidayRefreshRequest;
 import com.holidaykeeper.holidaykeeper.dto.response.HolidayResponse;
@@ -76,6 +77,13 @@ public class NagerHolidayService implements HolidayService {
 
         log.info("Refreshed holidays for country: {}, year: {} - Inserted: {}, Updated: {}",
                 request.getCountryCode(), request.getYear(), insertCount, updateCount);
+    }
+
+    @Transactional
+    @Override
+    public void deleteHolidays(HolidayDeleteRequest request) {
+        List<Holiday> holidays = getAllHolidaysByYearAndCountry(request.getYear(), request.getCountryCode());
+        holidayRepository.deleteAll(holidays);
     }
 
     /**
