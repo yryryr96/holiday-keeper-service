@@ -47,6 +47,7 @@ public class NagerHolidayService implements HolidayService {
     @Transactional
     @Override
     public void refreshHolidays(HolidayRefreshRequest request) {
+
         // 1. API에서 최신 Holiday 데이터 조회
         List<HolidayDto> holidayDtoList = nagerApiClient.getPublicHolidays(request.getYear(), request.getCountryCode());
 
@@ -54,14 +55,13 @@ public class NagerHolidayService implements HolidayService {
         Country country = countryService.findByCode(request.getCountryCode());
 
         // 3. DB에서 기존 Holiday 전체 조회 (페이징 순회)
-        List<Holiday> existingHolidays = getAllHolidaysByYearAndCountry(request.getYear(), request.getCountryCode());
+        List<Holiday> existingHolidays = holidayRepository.getHolidays(request.getYear(), request.getCountryCode());
 
         // 4. 기존 Holiday를 Map으로 변환 (date를 key로)
         Map<LocalDate, Holiday> existingHolidayMap = existingHolidays.stream()
                 .collect(Collectors.toMap(Holiday::getDate, h -> h));
 
-        int insertCount = 0;
-        int updateCount = 0;
+
 
         // 5. Upsert 로직
         for (HolidayDto dto : holidayDtoList) {
@@ -70,17 +70,13 @@ public class NagerHolidayService implements HolidayService {
 
             if (existingHoliday != null) {
                 // Update: 기존 Holiday 업데이트
+
                 existingHoliday.update(newHoliday);
-                updateCount++;
             } else {
                 // Insert: 새로운 Holiday 생성
                 holidayRepository.save(newHoliday);
-                insertCount++;
             }
         }
-
-        log.info("Refreshed holidays for country: {}, year: {} - Inserted: {}, Updated: {}",
-                request.getCountryCode(), request.getYear(), insertCount, updateCount);
     }
 
     @Transactional
@@ -98,6 +94,7 @@ public class NagerHolidayService implements HolidayService {
 
         holidayCountyMapRepository.deleteAllInBatch(counties);
         holidayTypeMapRepository.deleteAllInBatch(types);
+        holidayRepository.deleteAllInBatch(holidays);
     }
 
     /**
