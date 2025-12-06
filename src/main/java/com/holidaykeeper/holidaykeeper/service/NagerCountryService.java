@@ -25,4 +25,10 @@ public class NagerCountryService implements CountryService {
 
         return countryRepository.saveAll(countries);
     }
+
+    @Transactional(readOnly = true)
+    @Override
+    public Country findByCode(String countryCode) {
+        return countryRepository.findByCode(countryCode);
+    }
 }

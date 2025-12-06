@@ -8,4 +8,5 @@ import java.util.List;
 public interface CountryService {
 
     List<Country> saveAll(List<CountryDto> countryDtoList);
+    Country findByCode(String countryCode);
 }

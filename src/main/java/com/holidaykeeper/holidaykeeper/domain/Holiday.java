@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Comment;
 
 import java.time.LocalDate;
-import java.time.Year;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -74,5 +73,28 @@ public class Holiday {
     public void addCounty(HolidayCountyMap countyMap) {
         this.counties.add(countyMap);
         countyMap.setHoliday(this);
+    }
+
+    public void update(Holiday newHoliday) {
+        // 기본 필드 업데이트
+        this.localName = newHoliday.getLocalName();
+        this.name = newHoliday.getName();
+        this.global = newHoliday.isGlobal();
+        this.launchYear = newHoliday.getLaunchYear();
+
+        // 기존 연관관계 제거 (orphanRemoval로 자동 삭제)
+        this.types.clear();
+        this.counties.clear();
+
+        // 새로운 연관관계 설정 (양방향)
+        newHoliday.getTypes().forEach(typeMap -> {
+            typeMap.setHoliday(this);
+            this.types.add(typeMap);
+        });
+
+        newHoliday.getCounties().forEach(countyMap -> {
+            countyMap.setHoliday(this);
+            this.counties.add(countyMap);
+        });
     }
 }

@@ -1,6 +1,6 @@
 package com.holidaykeeper.holidaykeeper.dto;
 
-import com.holidaykeeper.holidaykeeper.domain.HolidayType;
+import com.holidaykeeper.holidaykeeper.domain.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
