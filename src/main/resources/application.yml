@@ -25,11 +25,11 @@ spring:
       hibernate:
         format_sql: true
 
-# Logging
-logging:
-  level:
-    com:
-      holidaykeeper: DEBUG
-    org:
-      hibernate:
-        SQL: DEBUG
+## Logging
+#logging:
+#  level:
+#    com:
+#      holidaykeeper: DEBUG
+#    org:
+#      hibernate:
+#        SQL: DEBUG
