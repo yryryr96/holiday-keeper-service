@@ -31,7 +31,7 @@ public class Holiday {
     private LocalDate date;
 
     @Column(name = "local_name")
-    @Comment("지역명")
+    @Comment("현지 명칭")
     private String localName;
 
     @Column(name = "name")
@@ -50,11 +50,11 @@ public class Holiday {
 
     @Column(name = "launch_year")
     @Comment("출시 년도")
-    private Year launchYear;
+    private Integer launchYear;
 
     @Builder
     public Holiday(Long id, Country country, LocalDate date, String localName, String name, boolean global,
-                   List<HolidayCountyMap> counties, List<HolidayTypeMap> types, Year launchYear) {
+                   List<HolidayCountyMap> counties, List<HolidayTypeMap> types, Integer launchYear) {
         this.id = id;
         this.country = country;
         this.date = date;
