@@ -2,13 +2,15 @@ package com.holidaykeeper.holidaykeeper.service;
 
 import com.holidaykeeper.holidaykeeper.domain.*;
 import com.holidaykeeper.holidaykeeper.dto.HolidayDto;
+import com.holidaykeeper.holidaykeeper.dto.request.HolidayGetRequest;
+import com.holidaykeeper.holidaykeeper.dto.response.HolidayResponse;
+import com.holidaykeeper.holidaykeeper.dto.response.PageResponse;
 import com.holidaykeeper.holidaykeeper.repository.HolidayRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Year;
 import java.util.List;
 
 @Slf4j
@@ -29,6 +31,13 @@ public class NagerHolidayService implements HolidayService {
         holidayRepository.saveAll(holidays);
     }
 
+    @Transactional(readOnly = true)
+    @Override
+    public PageResponse<HolidayResponse> getHolidays(HolidayGetRequest request) {
+        PageResponse<Holiday> holidays = holidayRepository.getHolidays(request);
+        return holidays.map(HolidayResponse::from);
+    }
+
     private Holiday convertToHoliday(HolidayDto holidayDto, Country country) {
         // 1. Holiday 엔티티 생성
         Holiday holiday = Holiday.builder()
@@ -37,7 +46,7 @@ public class NagerHolidayService implements HolidayService {
                 .localName(holidayDto.getLocalName())
                 .name(holidayDto.getName())
                 .global(holidayDto.getGlobal() != null ? holidayDto.getGlobal() : false)
-                .launchYear(holidayDto.getLaunchYear() != null ? Year.of(holidayDto.getLaunchYear()) : null)
+                .launchYear(holidayDto.getLaunchYear() != null ? holidayDto.getLaunchYear() : null)
                 .build();
 
         // 2. HolidayType 연관관계 설정
