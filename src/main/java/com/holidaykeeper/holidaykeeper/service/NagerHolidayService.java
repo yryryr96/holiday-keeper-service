@@ -8,7 +8,9 @@ import com.holidaykeeper.holidaykeeper.dto.request.HolidayGetRequest;
 import com.holidaykeeper.holidaykeeper.dto.request.HolidayRefreshRequest;
 import com.holidaykeeper.holidaykeeper.dto.response.HolidayResponse;
 import com.holidaykeeper.holidaykeeper.dto.response.PageResponse;
+import com.holidaykeeper.holidaykeeper.repository.HolidayCountyMapRepository;
 import com.holidaykeeper.holidaykeeper.repository.HolidayRepository;
+import com.holidaykeeper.holidaykeeper.repository.HolidayTypeMapRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -26,6 +28,8 @@ import java.util.stream.Collectors;
 public class NagerHolidayService implements HolidayService {
 
     private final HolidayRepository holidayRepository;
+    private final HolidayCountyMapRepository  holidayCountyMapRepository;
+    private final HolidayTypeMapRepository holidayTypeMapRepository;
     private final CountryService countryService;
     private final CountyService countyService;
     private final NagerApiClient nagerApiClient;
@@ -82,8 +86,18 @@ public class NagerHolidayService implements HolidayService {
     @Transactional
     @Override
     public void deleteHolidays(HolidayDeleteRequest request) {
-        List<Holiday> holidays = getAllHolidaysByYearAndCountry(request.getYear(), request.getCountryCode());
-        holidayRepository.deleteAll(holidays);
+        List<Holiday> holidays = holidayRepository.getHolidays(request.getYear(), request.getCountryCode());
+
+        List<HolidayCountyMap> counties = new ArrayList<>();
+        List<HolidayTypeMap> types = new ArrayList<>();
+
+        for (Holiday holiday : holidays) {
+            counties.addAll(holiday.getCounties());
+            types.addAll(holiday.getTypes());
+        }
+
+        holidayCountyMapRepository.deleteAllInBatch(counties);
+        holidayTypeMapRepository.deleteAllInBatch(types);
     }
 
     /**

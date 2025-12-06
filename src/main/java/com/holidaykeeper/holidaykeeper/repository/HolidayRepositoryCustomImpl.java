@@ -23,6 +23,42 @@ public class HolidayRepositoryCustomImpl implements HolidayRepositoryCustom {
     private static final int DEFAULT_PAGE_NUMBER = 0;
 
     @Override
+    public List<Holiday> getHolidays(Integer year, String CountryCode) {
+
+        List<Long> holidayIds = queryFactory.select(holiday.id)
+                .from(holiday)
+                .where(
+                        eqCountryCode(CountryCode),
+                        eqYear(year)
+                )
+                .fetch();
+
+        if (holidayIds.isEmpty()) {
+            return List.of();
+        }
+
+        List<Holiday> holidays = queryFactory.selectFrom(holiday)
+                .distinct()
+                .leftJoin(holiday.country).fetchJoin()
+                .where(holiday.id.in(holidayIds))
+                .fetch();
+
+        queryFactory.selectFrom(holiday)
+                .distinct()
+                .leftJoin(holiday.types).fetchJoin()
+                .where(holiday.id.in(holidayIds))
+                .fetch();
+
+        queryFactory.selectFrom(holiday)
+                .distinct()
+                .leftJoin(holiday.counties).fetchJoin()
+                .where(holiday.id.in(holidayIds))
+                .fetch();
+
+        return holidays;
+    }
+
+    @Override
     public PageResponse<Holiday> getHolidays(HolidayGetRequest request) {
 
         int page = request.getPage() != null ? request.getPage() : DEFAULT_PAGE_NUMBER;
