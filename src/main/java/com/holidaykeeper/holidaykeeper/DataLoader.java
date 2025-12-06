@@ -8,6 +8,7 @@ import com.holidaykeeper.holidaykeeper.service.CountryService;
 import com.holidaykeeper.holidaykeeper.service.HolidayService;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
@@ -15,6 +16,7 @@ import java.util.List;
 
 @Component
 @RequiredArgsConstructor
+@Profile("!test")
 public class DataLoader {
 
     private final NagerApiClient nagerApiClient;

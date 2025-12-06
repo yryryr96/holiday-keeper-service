@@ -1,10 +1,16 @@
 package com.holidaykeeper.holidaykeeper.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Schema(description = "공휴일 재동기화 요청")
 @Getter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class HolidayRefreshRequest {
 
     @Schema(description = "재동기화할 연도", example = "2024", required = true)

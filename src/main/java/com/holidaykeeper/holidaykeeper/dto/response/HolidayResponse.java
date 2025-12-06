@@ -19,11 +19,11 @@ public class HolidayResponse {
     private Boolean global;
     private List<String> counties;
     private Integer launchYear;
-    private List<HolidayType> types;
+    private List<String> types;
 
     @Builder
     private HolidayResponse(LocalDate date, String localName, String name, String countryCode,
-                           Boolean global, List<String> counties, Integer launchYear, List<HolidayType> types) {
+                           Boolean global, List<String> counties, Integer launchYear, List<String> types) {
         this.date = date;
         this.localName = localName;
         this.name = name;
@@ -40,8 +40,9 @@ public class HolidayResponse {
                 .map(c -> c.getCounty().getName())
                 .toList();
 
-        List<HolidayType> types = holiday.getTypes().stream()
+        List<String> types = holiday.getTypes().stream()
                 .map(HolidayTypeMap::getType)
+                .map(HolidayType::name)
                 .toList();
 
         return HolidayResponse.builder()
