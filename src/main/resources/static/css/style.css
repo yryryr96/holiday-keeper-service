@@ -1,0 +1,213 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #f5f5f5;
+    min-height: 100vh;
+    padding: 20px;
+    color: #333;
+}
+
+.container {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+h1 {
+    color: #333;
+    text-align: center;
+    margin-bottom: 30px;
+    font-size: 2em;
+    font-weight: 600;
+}
+
+.card {
+    background: white;
+    border-radius: 8px;
+    padding: 24px;
+    margin-bottom: 16px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    border: 1px solid #e0e0e0;
+}
+
+h2 {
+    color: #333;
+    margin-bottom: 20px;
+    font-size: 1.2em;
+    font-weight: 600;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+label {
+    display: block;
+    margin-bottom: 6px;
+    color: #555;
+    font-weight: 500;
+    font-size: 14px;
+}
+
+input, select {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 14px;
+    transition: border-color 0.2s;
+    background: #fff;
+}
+
+input:focus, select:focus {
+    outline: none;
+    border-color: #4a90d9;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 16px;
+}
+
+.button-group {
+    display: flex;
+    gap: 10px;
+    margin-top: 16px;
+}
+
+button {
+    background: #4a90d9;
+    color: white;
+    border: none;
+    padding: 10px 24px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+button:hover {
+    background: #3a7bc8;
+}
+
+button:active {
+    background: #2d6cb5;
+}
+
+button.delete-btn {
+    background: #dc5c5c;
+}
+
+button.delete-btn:hover {
+    background: #c94a4a;
+}
+
+button.refresh-btn {
+    background: #5a5a5a;
+}
+
+button.refresh-btn:hover {
+    background: #484848;
+}
+
+#results {
+    margin-top: 20px;
+    padding: 16px;
+    background: #fafafa;
+    border-radius: 6px;
+    max-height: 500px;
+    overflow-y: auto;
+    border: 1px solid #eee;
+}
+
+.holiday-item {
+    background: white;
+    padding: 14px;
+    margin-bottom: 10px;
+    border-radius: 6px;
+    border: 1px solid #e8e8e8;
+    border-left: 3px solid #4a90d9;
+}
+
+.holiday-date {
+    font-weight: 600;
+    color: #4a90d9;
+    font-size: 1em;
+}
+
+.holiday-name {
+    color: #333;
+    margin: 6px 0;
+    font-weight: 500;
+}
+
+.holiday-details {
+    color: #777;
+    font-size: 0.85em;
+    line-height: 1.6;
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 16px;
+}
+
+.pagination button {
+    padding: 8px 14px;
+    font-size: 13px;
+}
+
+.loading {
+    text-align: center;
+    color: #666;
+    padding: 20px;
+}
+
+.error {
+    background: #fef2f2;
+    color: #b91c1c;
+    padding: 14px;
+    border-radius: 6px;
+    margin-top: 12px;
+    border-left: 3px solid #dc5c5c;
+    font-size: 14px;
+}
+
+.success {
+    background: #f0fdf4;
+    color: #166534;
+    padding: 14px;
+    border-radius: 6px;
+    margin-top: 12px;
+    border-left: 3px solid #4ade80;
+    font-size: 14px;
+}
+
+.info-box {
+    background: #f8fafc;
+    padding: 14px;
+    border-radius: 6px;
+    border: 1px solid #e2e8f0;
+    font-size: 14px;
+    color: #555;
+}
+
+.badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.8em;
+    margin-right: 4px;
+    background: #e8e8e8;
+    color: #555;
+}

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Holiday Keeper - 공휴일 관리</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Holiday Keeper</h1>
+
+        <div class="card">
+            <div class="info-box">
+                <strong>사용 가능한 국가 코드:</strong> KR, US, JP, CN, GB, FR, DE, CA, AU, IT 등 (ISO 3166-1 alpha-2 형식)
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>공휴일 조회</h2>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="searchYear">연도</label>
+                    <input type="number" id="searchYear" placeholder="예: 2024">
+                </div>
+                <div class="form-group">
+                    <label for="searchCountry">국가 코드</label>
+                    <input type="text" id="searchCountry" placeholder="예: KR" maxlength="2">
+                </div>
+                <div class="form-group">
+                    <label for="searchFromDate">시작 날짜</label>
+                    <input type="date" id="searchFromDate">
+                </div>
+                <div class="form-group">
+                    <label for="searchToDate">종료 날짜</label>
+                    <input type="date" id="searchToDate">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="searchPage">페이지</label>
+                    <input type="number" id="searchPage" value="1" min="1">
+                </div>
+                <div class="form-group">
+                    <label for="searchSize">페이지 크기</label>
+                    <input type="number" id="searchSize" value="10" min="1" max="100">
+                </div>
+            </div>
+            <div class="button-group">
+                <button onclick="searchHolidays()">조회</button>
+            </div>
+            <div id="results"></div>
+        </div>
+
+        <div class="card">
+            <h2>공휴일 재동기화</h2>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="refreshYear">연도 *</label>
+                    <input type="number" id="refreshYear" placeholder="예: 2024" required>
+                </div>
+                <div class="form-group">
+                    <label for="refreshCountry">국가 코드 *</label>
+                    <input type="text" id="refreshCountry" placeholder="예: KR" maxlength="2" required>
+                </div>
+            </div>
+            <div class="button-group">
+                <button onclick="refreshHolidays()">재동기화</button>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>공휴일 삭제</h2>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="deleteYear">연도 *</label>
+                    <input type="number" id="deleteYear" placeholder="예: 2024" required>
+                </div>
+                <div class="form-group">
+                    <label for="deleteCountry">국가 코드 *</label>
+                    <input type="text" id="deleteCountry" placeholder="예: KR" maxlength="2" required>
+                </div>
+            </div>
+            <div class="button-group">
+                <button class="delete-btn" onclick="deleteHolidays()">삭제</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/app.js"></script>
+</body>
+</html>
