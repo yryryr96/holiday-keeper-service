@@ -1,5 +1,34 @@
 const API_BASE_URL = '/holidays';
 
+// 국가 목록 로드
+async function loadCountries() {
+    try {
+        const response = await fetch('/countries');
+        const data = await response.json();
+
+        if (response.ok && data.data && data.data.countries) {
+            const countries = data.data.countries;
+            const selects = ['searchCountry', 'refreshCountry', 'deleteCountry'];
+
+            selects.forEach(selectId => {
+                const select = document.getElementById(selectId);
+                countries.forEach(country => {
+                    const option = document.createElement('option');
+                    option.value = country.countryCode;
+                    option.textContent = `${country.name} (${country.countryCode})`;
+                    select.appendChild(option);
+                });
+            });
+
+            document.getElementById('countryCount').textContent = countries.length;
+            document.getElementById('searchCountry').value = 'KR';
+        }
+    } catch (error) {
+        console.error('국가 목록 로드 실패:', error);
+        document.getElementById('countryCount').textContent = '로드 실패';
+    }
+}
+
 // 조회 필터 설정 후 검색 수행
 function searchWithFilter(year, countryCode) {
     document.getElementById('searchYear').value = year;
@@ -179,9 +208,10 @@ async function deleteHolidays() {
 }
 
 // 페이지 로드 시 초기화
-window.addEventListener('DOMContentLoaded', () => {
+window.addEventListener('DOMContentLoaded', async () => {
     const currentYear = new Date().getFullYear();
     document.getElementById('searchYear').value = currentYear;
-    document.getElementById('searchCountry').value = 'KR';
+
+    await loadCountries();
     searchHolidays();
 });
