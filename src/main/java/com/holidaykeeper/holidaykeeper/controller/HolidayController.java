@@ -27,7 +27,6 @@ public class HolidayController {
     @Operation(summary = "공휴일 조회", description = "연도, 국가 코드, 날짜 범위 등의 필터로 공휴일을 페이징 조회합니다.")
     @GetMapping
     public ApiResponse<PageResponse<HolidayResponse>> getHolidays(@Valid @ModelAttribute HolidayGetRequest request) {
-        System.out.println("request.getCountryCode() = " + request.getCountryCode());
         return ApiResponse.ok(holidayService.getHolidays(request));
     }
 

@@ -56,6 +56,7 @@ class HolidayControllerTest {
     @Test
     @DisplayName("GET /holidays - 공휴일 조회 성공")
     void getHolidays() throws Exception {
+
         // given
         HolidayResponse response = HolidayResponse.builder()
                 .date(TEST_DATE)
@@ -107,6 +108,7 @@ class HolidayControllerTest {
     @Test
     @DisplayName("GET /holidays - 날짜 범위 필터링")
     void getHolidaysWithDateRange() throws Exception {
+
         // given
         PageResponse<HolidayResponse> pageResponse = PageResponse.<HolidayResponse>builder()
                 .content(List.of())
@@ -118,7 +120,7 @@ class HolidayControllerTest {
 
         given(holidayService.getHolidays(any())).willReturn(pageResponse);
 
-        // when & then
+        // when
         mockMvc.perform(get("/holidays")
                         .param("fromDate", "2024-01-01")
                         .param("toDate", "2024-12-31")
@@ -127,11 +129,22 @@ class HolidayControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.code").value(200));
+
+        // then
+        ArgumentCaptor<HolidayGetRequest> requestCaptor = ArgumentCaptor.forClass(HolidayGetRequest.class);
+
+        verify(holidayService).getHolidays(requestCaptor.capture());
+
+        HolidayGetRequest capturedRequest = requestCaptor.getValue();
+
+        assertThat(capturedRequest.getFromDate()).isEqualTo(LocalDate.of(2024, 1, 1));
+        assertThat(capturedRequest.getToDate()).isEqualTo(LocalDate.of(2024, 12, 31));
     }
 
     @Test
     @DisplayName("POST /holidays/refresh - 공휴일 재동기화 성공")
     void refreshHolidays() throws Exception {
+
         // given
         HolidayRefreshRequest request = HolidayRefreshRequest.builder()
                 .year(TEST_YEAR)
@@ -140,18 +153,29 @@ class HolidayControllerTest {
 
         doNothing().when(holidayService).refreshHolidays(any());
 
-        // when & then
+        // when
         mockMvc.perform(post("/holidays/refresh")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.code").value(200));
+
+        // then
+        ArgumentCaptor<HolidayRefreshRequest> requestCaptor = ArgumentCaptor.forClass(HolidayRefreshRequest.class);
+
+        verify(holidayService).refreshHolidays(requestCaptor.capture());
+
+        HolidayRefreshRequest capturedRequest = requestCaptor.getValue();
+
+        assertThat(capturedRequest.getYear()).isEqualTo(TEST_YEAR);
+        assertThat(capturedRequest.getCountryCode()).isEqualTo(TEST_COUNTRY_CODE);
     }
 
     @Test
     @DisplayName("DELETE /holidays - 공휴일 삭제 성공")
     void deleteHolidays() throws Exception {
+
         // given
         HolidayDeleteRequest request = HolidayDeleteRequest.builder()
                 .year(TEST_YEAR)
@@ -160,13 +184,23 @@ class HolidayControllerTest {
 
         doNothing().when(holidayService).deleteHolidays(any());
 
-        // when & then
+        // when
         mockMvc.perform(delete("/holidays")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.code").value(204));
+
+        // then
+        ArgumentCaptor<HolidayDeleteRequest> requestCaptor = ArgumentCaptor.forClass(HolidayDeleteRequest.class);
+
+        verify(holidayService).deleteHolidays(requestCaptor.capture());
+
+        HolidayDeleteRequest capturedRequest = requestCaptor.getValue();
+
+        assertThat(capturedRequest.getYear()).isEqualTo(TEST_YEAR);
+        assertThat(capturedRequest.getCountryCode()).isEqualTo(TEST_COUNTRY_CODE);
     }
 
     @Nested
