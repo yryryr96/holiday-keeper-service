@@ -39,6 +39,12 @@ function searchWithFilter(year, countryCode) {
     searchHolidays();
 }
 
+// 새 검색 (페이지 초기화)
+function resetAndSearch() {
+    document.getElementById('searchPage').value = 1;
+    searchHolidays();
+}
+
 // 공휴일 조회
 async function searchHolidays() {
     const year = document.getElementById('searchYear').value;
