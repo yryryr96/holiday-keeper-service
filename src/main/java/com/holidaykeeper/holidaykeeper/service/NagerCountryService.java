@@ -2,6 +2,7 @@ package com.holidaykeeper.holidaykeeper.service;
 
 import com.holidaykeeper.holidaykeeper.domain.Country;
 import com.holidaykeeper.holidaykeeper.dto.CountryDto;
+import com.holidaykeeper.holidaykeeper.exception.CountryNotFoundException;
 import com.holidaykeeper.holidaykeeper.repository.CountryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -29,6 +30,10 @@ public class NagerCountryService implements CountryService {
     @Transactional(readOnly = true)
     @Override
     public Country findByCode(String countryCode) {
-        return countryRepository.findByCode(countryCode);
+        Country country = countryRepository.findByCode(countryCode);
+        if (country == null) {
+            throw new CountryNotFoundException(countryCode);
+        }
+        return country;
     }
 }

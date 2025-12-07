@@ -7,10 +7,12 @@ import com.holidaykeeper.holidaykeeper.dto.request.HolidayDeleteRequest;
 import com.holidaykeeper.holidaykeeper.dto.request.HolidayGetRequest;
 import com.holidaykeeper.holidaykeeper.dto.response.HolidayResponse;
 import com.holidaykeeper.holidaykeeper.dto.response.PageResponse;
+import com.holidaykeeper.holidaykeeper.exception.CountryNotFoundException;
 import com.holidaykeeper.holidaykeeper.repository.CountryRepository;
 import com.holidaykeeper.holidaykeeper.repository.HolidayRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -21,14 +23,25 @@ import java.time.LocalDate;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SpringBootTest
 @Transactional
 @ActiveProfiles("test")
 class NagerHolidayServiceTest {
 
+    private static final int TEST_YEAR = 2024;
+    private static final String TEST_COUNTRY_CODE = "KR";
+    private static final String TEST_COUNTRY_NAME = "South Korea";
+    private static final String INVALID_COUNTRY_CODE = "XX";
+    private static final int DEFAULT_PAGE = 0;
+    private static final int DEFAULT_SIZE = 10;
+
     @Autowired
     private HolidayService holidayService;
+
+    @Autowired
+    private CountryService countryService;
 
     @Autowired
     private HolidayRepository holidayRepository;
@@ -40,12 +53,11 @@ class NagerHolidayServiceTest {
 
     @BeforeEach
     void setUp() {
-        // 테스트용 국가 데이터 조회 또는 생성
-        testCountry = countryRepository.findByCode("KR");
+        testCountry = countryRepository.findByCode(TEST_COUNTRY_CODE);
         if (testCountry == null) {
             testCountry = Country.builder()
-                    .code("KR")
-                    .name("South Korea")
+                    .code(TEST_COUNTRY_CODE)
+                    .name(TEST_COUNTRY_NAME)
                     .build();
             testCountry = countryRepository.save(testCountry);
         }
@@ -59,9 +71,9 @@ class NagerHolidayServiceTest {
         holidayService.saveAll(List.of(holidayDto), testCountry);
 
         HolidayGetRequest request = HolidayGetRequest.builder()
-                .year(2024)
-                .page(0)
-                .size(10)
+                .year(TEST_YEAR)
+                .page(DEFAULT_PAGE)
+                .size(DEFAULT_SIZE)
                 .build();
 
         // when
@@ -69,7 +81,7 @@ class NagerHolidayServiceTest {
 
         // then
         assertThat(result.getContent()).isNotEmpty();
-        assertThat(result.getContent().get(0).getDate().getYear()).isEqualTo(2024);
+        assertThat(result.getContent().get(0).getDate().getYear()).isEqualTo(TEST_YEAR);
     }
 
     @Test
@@ -80,9 +92,9 @@ class NagerHolidayServiceTest {
         holidayService.saveAll(List.of(holidayDto), testCountry);
 
         HolidayGetRequest request = HolidayGetRequest.builder()
-                .countryCode("KR")
-                .page(0)
-                .size(10)
+                .countryCode(TEST_COUNTRY_CODE)
+                .page(DEFAULT_PAGE)
+                .size(DEFAULT_SIZE)
                 .build();
 
         // when
@@ -90,7 +102,7 @@ class NagerHolidayServiceTest {
 
         // then
         assertThat(result.getContent()).isNotEmpty();
-        assertThat(result.getContent().get(0).getCountryCode()).isEqualTo("KR");
+        assertThat(result.getContent().get(0).getCountryCode()).isEqualTo(TEST_COUNTRY_CODE);
     }
 
     @Test
@@ -102,10 +114,10 @@ class NagerHolidayServiceTest {
         holidayService.saveAll(List.of(holiday1, holiday2), testCountry);
 
         HolidayGetRequest request = HolidayGetRequest.builder()
-                .fromDate(LocalDate.of(2024, 1, 1))
-                .toDate(LocalDate.of(2024, 6, 30))
-                .page(0)
-                .size(10)
+                .fromDate(LocalDate.of(TEST_YEAR, 1, 1))
+                .toDate(LocalDate.of(TEST_YEAR, 6, 30))
+                .page(DEFAULT_PAGE)
+                .size(DEFAULT_SIZE)
                 .build();
 
         // when
@@ -126,16 +138,16 @@ class NagerHolidayServiceTest {
         }
 
         HolidayGetRequest request = HolidayGetRequest.builder()
-                .year(2024)
-                .page(0)
-                .size(10)
+                .year(TEST_YEAR)
+                .page(DEFAULT_PAGE)
+                .size(DEFAULT_SIZE)
                 .build();
 
         // when
         PageResponse<HolidayResponse> result = holidayService.getHolidays(request);
 
         // then
-        assertThat(result.getSize()).isEqualTo(10);
+        assertThat(result.getSize()).isEqualTo(DEFAULT_SIZE);
         assertThat(result.getTotalElements()).isGreaterThanOrEqualTo(15);
         assertThat(result.getTotalPages()).isGreaterThanOrEqualTo(2);
     }
@@ -148,8 +160,8 @@ class NagerHolidayServiceTest {
         holidayService.saveAll(List.of(holidayDto), testCountry);
 
         HolidayDeleteRequest request = HolidayDeleteRequest.builder()
-                .year(2024)
-                .countryCode("KR")
+                .year(TEST_YEAR)
+                .countryCode(TEST_COUNTRY_CODE)
                 .build();
 
         // when
@@ -165,11 +177,25 @@ class NagerHolidayServiceTest {
                 .date(LocalDate.parse(date))
                 .name(name)
                 .localName(name)
-                .countryCode("KR")
+                .countryCode(TEST_COUNTRY_CODE)
                 .global(true)
                 .counties(List.of())
-                .launchYear(2024)
+                .launchYear(TEST_YEAR)
                 .types(List.of("PUBLIC"))
                 .build();
+    }
+
+    @Nested
+    @DisplayName("예외 테스트")
+    class ExceptionTest {
+
+        @Test
+        @DisplayName("존재하지 않는 국가 코드로 조회시 CountryNotFoundException 발생")
+        void findByCode_notFound_throwsException() {
+            // when & then
+            assertThatThrownBy(() -> countryService.findByCode(INVALID_COUNTRY_CODE))
+                    .isInstanceOf(CountryNotFoundException.class)
+                    .hasMessageContaining(INVALID_COUNTRY_CODE);
+        }
     }
 }
