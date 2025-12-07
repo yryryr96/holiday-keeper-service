@@ -22,7 +22,7 @@ public class County {
     private String name;
 
     @Builder
-    public County(Long id, String name) {
+    private County(Long id, String name) {
         this.id = id;
         this.name = name;
     }

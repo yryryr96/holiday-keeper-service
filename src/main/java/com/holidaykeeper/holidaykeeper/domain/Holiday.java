@@ -54,8 +54,8 @@ public class Holiday {
     private Integer launchYear;
 
     @Builder
-    public Holiday(Long id, Country country, LocalDate date, String localName, String name, boolean global,
-                   List<HolidayCountyMap> counties, List<HolidayTypeMap> types, Integer launchYear) {
+    private Holiday(Long id, Country country, LocalDate date, String localName, String name, boolean global,
+                    List<HolidayCountyMap> counties, List<HolidayTypeMap> types, Integer launchYear) {
         this.id = id;
         this.country = country;
         this.date = date;

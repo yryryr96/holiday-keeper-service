@@ -3,18 +3,14 @@ package com.holidaykeeper.holidaykeeper.dto.request;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Pattern;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 
 @Schema(description = "공휴일 조회 요청")
 @Getter
 @Builder
-@NoArgsConstructor
-@AllArgsConstructor
 public class HolidayGetRequest {
 
     @Schema(description = "조회할 연도", example = "2024")

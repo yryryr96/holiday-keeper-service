@@ -25,7 +25,7 @@ public class HolidayTypeMap {
     private HolidayType type;
 
     @Builder
-    public HolidayTypeMap(Long id, Holiday holiday, HolidayType type) {
+    private HolidayTypeMap(Long id, Holiday holiday, HolidayType type) {
         this.id = id;
         this.holiday = holiday;
         this.type = type;

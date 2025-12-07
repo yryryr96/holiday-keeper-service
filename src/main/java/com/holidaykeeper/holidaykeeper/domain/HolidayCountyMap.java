@@ -24,7 +24,7 @@ public class HolidayCountyMap {
     private Holiday holiday;
 
     @Builder
-    public HolidayCountyMap(Long id, County county, Holiday holiday) {
+    private HolidayCountyMap(Long id, County county, Holiday holiday) {
         this.id = id;
         this.county = county;
         this.holiday = holiday;
