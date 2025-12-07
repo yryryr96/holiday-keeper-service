@@ -102,31 +102,6 @@ public class NagerHolidayService implements HolidayService {
         holidayRepository.deleteAllInBatch(holidays);
     }
 
-    /**
-     * 모든 페이지를 순회하면서 Holiday 데이터 조회
-     */
-    private List<Holiday> getAllHolidaysByYearAndCountry(Integer year, String countryCode) {
-
-        List<Holiday> allHolidays = new ArrayList<>();
-        int curPage = 0;
-        PageResponse<Holiday> pageResponse;
-
-        do {
-            HolidayGetRequest pageRequest = HolidayGetRequest.builder()
-                    .year(year)
-                    .countryCode(countryCode)
-                    .page(curPage)
-                    .build();
-
-            pageResponse = holidayRepository.getHolidays(pageRequest);
-            allHolidays.addAll(pageResponse.getContent());
-
-            curPage++;
-        } while (curPage < pageResponse.getTotalPages());
-
-        return allHolidays;
-    }
-
     @Transactional(readOnly = true)
     @Override
     public PageResponse<HolidayResponse> getHolidays(HolidayGetRequest request) {
