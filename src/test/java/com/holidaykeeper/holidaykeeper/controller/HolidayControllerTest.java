@@ -2,15 +2,18 @@ package com.holidaykeeper.holidaykeeper.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.holidaykeeper.holidaykeeper.dto.request.HolidayDeleteRequest;
+import com.holidaykeeper.holidaykeeper.dto.request.HolidayGetRequest;
 import com.holidaykeeper.holidaykeeper.dto.request.HolidayRefreshRequest;
 import com.holidaykeeper.holidaykeeper.dto.response.HolidayResponse;
 import com.holidaykeeper.holidaykeeper.dto.response.PageResponse;
 import com.holidaykeeper.holidaykeeper.exception.CountryNotFoundException;
 import com.holidaykeeper.holidaykeeper.exception.ExternalApiException;
 import com.holidaykeeper.holidaykeeper.service.HolidayService;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
@@ -20,10 +23,10 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.time.LocalDate;
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -87,6 +90,18 @@ class HolidayControllerTest {
                 .andExpect(jsonPath("$.data.content[0].name").value(TEST_HOLIDAY_NAME))
                 .andExpect(jsonPath("$.data.content[0].countryCode").value(TEST_COUNTRY_CODE))
                 .andExpect(jsonPath("$.data.totalElements").value(1));
+
+        // then
+        ArgumentCaptor<HolidayGetRequest> requestCaptor = ArgumentCaptor.forClass(HolidayGetRequest.class);
+
+        verify(holidayService).getHolidays(requestCaptor.capture());
+
+        HolidayGetRequest capturedRequest = requestCaptor.getValue();
+
+        assertThat(capturedRequest.getYear()).isEqualTo(TEST_YEAR);
+        assertThat(capturedRequest.getCountryCode()).isEqualTo(TEST_COUNTRY_CODE);
+        assertThat(capturedRequest.getPage()).isEqualTo(DEFAULT_PAGE);
+        assertThat(capturedRequest.getSize()).isEqualTo(DEFAULT_SIZE);
     }
 
     @Test
