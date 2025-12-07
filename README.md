@@ -4,7 +4,7 @@
 
 ## 📋 프로젝트 개요
 
-외부 API 두 개만으로 최근 5년(2020~2025)의 전 세계 공휴일 데이터를 저장·조회·관리하는 Mini Service입니다.
+외부 API 두 개만으로 최근 5년의 전 세계 공휴일 데이터를 저장·조회·관리하는 Mini Service입니다.
 
 ## 🛠 기술 스택
 
@@ -37,7 +37,7 @@ cd holiday-keeper-service
 애플리케이션이 시작되면 자동으로 최근 5년의 공휴일 데이터가 로딩됩니다.
 
 ### 4. 접속 URL
-- **애플리케이션**: http://localhost:8080
+- **웹 UI**: http://localhost:8080
 - **Swagger UI**: http://localhost:8080/swagger-ui/index.html
 - **H2 Console**: http://localhost:8080/h2-console
   - JDBC URL: `jdbc:h2:mem:holidaydb`
@@ -134,6 +134,27 @@ cd holiday-keeper-service
 }
 ```
 
+### 4. 지원 국가 조회
+**GET** `/countries`
+
+지원하는 모든 국가 목록을 조회합니다.
+
+**Response Example:**
+```json
+{
+  "code": 200,
+  "status": "OK",
+  "message": "OK",
+  "data": {
+    "countries": [
+      { "countryCode": "KR", "name": "South Korea" },
+      { "countryCode": "US", "name": "United States" },
+      { "countryCode": "JP", "name": "Japan" }
+    ]
+  }
+}
+```
+
 ## 🗄 데이터베이스 설계
 
 ### ERD
@@ -176,8 +197,10 @@ County (지역)
 2. **검색**: 연도별·국가별·날짜 범위 필터 + 페이징 (QueryDSL 활용)
 3. **재동기화**: 특정 연도·국가 데이터 Upsert (있으면 Update, 없으면 Insert)
 4. **삭제**: 특정 연도·국가의 공휴일 전체 삭제
-5. **API 문서화**: Swagger UI로 모든 API 자동 노출
-6. **테스트**: Controller, Service, Repository 계층별 단위/통합 테스트 작성
+5. **지원 국가 조회**: 전체 지원 국가 목록 API 제공
+6. **웹 UI**: 공휴일 조회/재동기화/삭제를 위한 웹 인터페이스
+7. **API 문서화**: Swagger UI로 모든 API 자동 노출
+8. **테스트**: Controller, Service, Repository 계층별 단위/통합 테스트 작성
 
 ## 🧪 테스트 실행 방법
 
@@ -189,16 +212,36 @@ County (지역)
 ### 특정 테스트 클래스 실행
 ```bash
 ./gradlew test --tests HolidayControllerTest
+./gradlew test --tests CountryControllerTest
 ./gradlew test --tests HolidayRepositoryTest
 ./gradlew test --tests NagerHolidayServiceTest
+./gradlew test --tests NagerCountryServiceTest
 ```
 
 ### 테스트 구성
-- **HolidayControllerTest**: REST API 엔드포인트 테스트 (MockMvc)
+- **HolidayControllerTest**: 공휴일 REST API 엔드포인트 테스트 (MockMvc)
+- **CountryControllerTest**: 국가 REST API 엔드포인트 테스트 (MockMvc)
 - **HolidayRepositoryTest**: QueryDSL 동적 쿼리 및 페이징 테스트
-- **NagerHolidayServiceTest**: 비즈니스 로직 통합 테스트
+- **NagerHolidayServiceTest**: 공휴일 비즈니스 로직 통합 테스트
+- **NagerCountryServiceTest**: 국가 비즈니스 로직 통합 테스트
 
 **참고**: 테스트 실행 시 DataLoader가 자동으로 비활성화됩니다 (`@ActiveProfiles("test")`)
+
+### 테스트 성공 스크린샷
+
+![빌드 성공](/images/build-success.png)
+
+
+
+## 🖥 웹 UI
+
+애플리케이션 실행 후 http://localhost:8080 접속 시 웹 UI를 사용할 수 있습니다.
+
+### 주요 기능
+- **공휴일 조회**: 연도, 국가, 날짜 범위로 필터링하여 공휴일 검색
+- **공휴일 재동기화**: 특정 연도/국가의 데이터를 외부 API에서 다시 가져오기
+- **공휴일 삭제**: 특정 연도/국가의 모든 공휴일 삭제
+- **국가 선택**: 드롭다운으로 지원 국가 선택 (100+ 국가)
 
 ## 📖 Swagger UI 확인 방법
 
@@ -219,7 +262,8 @@ src/main/java/com/holidaykeeper/holidaykeeper
 ├── client
 │   └── NagerApiClient.java              # 외부 API 호출
 ├── controller
-│   └── HolidayController.java           # REST API 엔드포인트
+│   ├── HolidayController.java           # 공휴일 REST API 엔드포인트
+│   └── CountryController.java           # 국가 REST API 엔드포인트
 ├── domain
 │   ├── Country.java                     # 국가 엔티티
 │   ├── County.java                      # 지역 엔티티
@@ -235,7 +279,8 @@ src/main/java/com/holidaykeeper/holidaykeeper
 │   └── response
 │       ├── ApiResponse.java            # 공통 응답 래퍼
 │       ├── PageResponse.java           # 페이징 응답
-│       └── HolidayResponse.java        # 공휴일 응답
+│       ├── HolidayResponse.java        # 공휴일 응답
+│       └── CountryListResponse.java    # 국가 목록 응답
 ├── repository
 │   ├── HolidayRepository.java          # Holiday Repository
 │   ├── HolidayRepositoryCustom.java    # QueryDSL 인터페이스
@@ -244,22 +289,29 @@ src/main/java/com/holidaykeeper/holidaykeeper
 │   ├── CountyRepository.java
 │   └── HolidayTypeMapRepository.java
 ├── service
-│   ├── HolidayService.java             # 서비스 인터페이스
-│   ├── NagerHolidayService.java        # 서비스 구현체
-│   ├── CountryService.java
-│   └── CountyService.java
+│   ├── HolidayService.java             # 공휴일 서비스 인터페이스
+│   ├── NagerHolidayService.java        # 공휴일 서비스 구현체
+│   ├── CountryService.java             # 국가 서비스 인터페이스
+│   ├── NagerCountryService.java        # 국가 서비스 구현체
+│   └── CountyService.java              # 지역 서비스
 └── DataLoader.java                      # 초기 데이터 로딩 (@Profile("!test"))
 
 src/main/resources
 ├── application.yml                      # 애플리케이션 설정
+└── static                               # 웹 UI
+    ├── index.html                       # 메인 페이지
+    ├── css/style.css                    # 스타일시트
+    └── js/app.js                        # JavaScript 애플리케이션
 
 src/test/java/com/holidaykeeper/holidaykeeper
 ├── controller
-│   └── HolidayControllerTest.java       # Controller 테스트
+│   ├── HolidayControllerTest.java       # 공휴일 Controller 테스트
+│   └── CountryControllerTest.java       # 국가 Controller 테스트
 ├── repository
 │   └── HolidayRepositoryTest.java       # Repository 테스트
 └── service
-    └── NagerHolidayServiceTest.java     # Service 통합 테스트
+    ├── NagerHolidayServiceTest.java     # 공휴일 Service 통합 테스트
+    └── NagerCountryServiceTest.java     # 국가 Service 통합 테스트
 ```
 
 ## 🎯 주요 기술적 고려사항
@@ -276,11 +328,9 @@ src/test/java/com/holidaykeeper/holidaykeeper
 
 ### 3. Upsert 구현
 - 기존 데이터 조회 → Map 변환 → 존재 여부에 따라 Update/Insert
-- `@Transactional`로 원자성 보장
 
 ### 4. 성능 고려
 - Lazy Loading 기본 전략
-- 페이징으로 메모리 효율성 확보
 - 동적 쿼리로 불필요한 데이터 조회 방지
 - 과도한 SQL 방지
   - 연관관계가 매핑된 데이터를 삭제하는 과정에서 N개의 쿼리가 추가로 발생 (N+1 문제)
